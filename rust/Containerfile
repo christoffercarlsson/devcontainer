@@ -14,9 +14,8 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 
 USER ${USERNAME}
 
-RUN rustup toolchain install stable nightly \
-    && rustup component add --toolchain stable rust-analyzer rust-src \
-    && rustup component add --toolchain nightly rust-analyzer rust-src
+RUN rustup toolchain install stable \
+    && rustup component add rust-analyzer rust-src
 
 COPY --chmod=644 --chown=${USERNAME}:${USERNAME} configs/nvim.lua /home/${USERNAME}/.nvim.local.lua
 
