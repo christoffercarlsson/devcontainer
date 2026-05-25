@@ -1,6 +1,6 @@
 ARG BASE=base
 
-FROM ghcr.io/christoffercarlsson/devcontainer/${BASE}:latest
+FROM ghcr.io/christoffercarlsson/devcontainer/${BASE}:main
 
 ARG USERNAME=dev
 
@@ -23,6 +23,6 @@ LABEL org.opencontainers.image.source="https://github.com/christoffercarlsson/de
       org.opencontainers.image.authors="Christoffer Carlsson <cc@christoffercarlsson.com>" \
       org.opencontainers.image.description="Rust devcontainer" \
       org.opencontainers.image.licenses="Unlicense" \
-      org.opencontainers.image.title="Rust"
+      org.opencontainers.image.title="rust"
 
 CMD ["sleep", "infinity"]
