@@ -109,7 +109,7 @@ WORKDIR /home/${USERNAME}
 
 RUN rm .bashrc
 
-RUN git clone https://github.com/christoffercarlsson/configs .dotfiles \
+RUN git clone https://github.com/christoffercarlsson/dotfiles .dotfiles \
     && cd .dotfiles \
     && stow bash \
     && stow fish \
