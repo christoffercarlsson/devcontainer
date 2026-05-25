@@ -1,0 +1,29 @@
+ARG BASE=base
+
+FROM ghcr.io/christoffercarlsson/devcontainer/${BASE}:latest
+
+ARG USERNAME=dev
+
+USER root
+
+RUN export DEBIAN_FRONTEND=noninteractive \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends rustup \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+USER ${USERNAME}
+
+RUN rustup toolchain install stable nightly \
+    && rustup component add --toolchain stable rust-analyzer rust-src \
+    && rustup component add --toolchain nightly rust-analyzer rust-src
+
+COPY --chmod=644 --chown=${USERNAME}:${USERNAME} configs/nvim.lua /home/${USERNAME}/.nvim.local.lua
+
+LABEL org.opencontainers.image.source="https://github.com/christoffercarlsson/devcontainer" \
+      org.opencontainers.image.authors="Christoffer Carlsson <cc@christoffercarlsson.com>" \
+      org.opencontainers.image.description="Rust devcontainer" \
+      org.opencontainers.image.licenses="Unlicense" \
+      org.opencontainers.image.title="Rust"
+
+CMD ["sleep", "infinity"]

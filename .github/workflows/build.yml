@@ -22,6 +22,10 @@ jobs:
             name: base
             path: base
             base: debian:trixie-slim
+          -
+            name: rust
+            path: rust
+            base: base
     steps:
       -
         name: Checkout repository
