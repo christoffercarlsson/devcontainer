@@ -1,63 +1,49 @@
-name: Build and publish devcontainer images to GHCR
+name: Build and publish devcontainer images to GitHub Container Registry
+
 on:
   push:
     branches:
       - main
-env:
-  REGISTRY: ghcr.io
+
+permissions:
+  contents: read
+
 jobs:
-  build-and-push-images:
-    runs-on: ubuntu-latest
+  build:
     permissions:
       contents: read
-      packages: write
-      attestations: write
       id-token: write
+      packages: write
     strategy:
       fail-fast: false
       max-parallel: 1
       matrix:
         include:
-          -
-            name: base
+          - name: base
             path: base
             base: debian:trixie-slim
-          -
-            name: rust
+          - name: c
+            path: c
+            base: base
+          - name: rust
             path: rust
             base: base
-    steps:
-      -
-        name: Checkout repository
-        uses: actions/checkout@v6
-      -
-        name: Log in to the Container registry
-        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
-        with:
-          registry: "${{ env.REGISTRY }}"
-          username: "${{ github.actor }}"
-          password: "${{ secrets.GITHUB_TOKEN }}"
-      -
-        name: Extract metadata for Docker
-        id: meta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
-        with:
-          images: "${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.name }}"
-      -
-        name: Build and push Docker image
-        id: push
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
-        with:
-          context: "./${{ matrix.path }}"
-          file: "./${{ matrix.path }}/Containerfile"
-          push: true
-          tags: "${{ steps.meta.outputs.tags }}"
-          labels: "${{ steps.meta.outputs.labels }}"
-          build-args: "BASE=${{ matrix.base }}"
-      -
-        name: Generate artifact attestation
-        uses: actions/attest@v4
-        with:
-          subject-name: "${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.name }}"
-          subject-digest: "${{ steps.push.outputs.digest }}"
-          push-to-registry: true
+    uses: docker/github-builder/.github/workflows/build.yml@073833262a23a17675c95c4541ab063b7646756b
+    with:
+      output: image
+      push: true
+      platforms: linux/amd64,linux/arm64
+      context: ./${{ matrix.path }}
+      file: Containerfile
+      build-args: BASE=${{ matrix.base }}
+      meta-images: ghcr.io/${{ github.repository }}/${{ matrix.name }}
+      meta-tags: |
+        type=raw,value=latest,enable={{is_default_branch}}
+        type=ref,event=branch
+        type=sha,prefix=,format=long
+        type=sha,prefix=,format=short
+    secrets:
+      registry-auths: |
+        - registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
