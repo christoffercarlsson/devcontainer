@@ -76,7 +76,6 @@ RUN export DEBIAN_FRONTEND=noninteractive \
         shellcheck \
         shfmt \
         stow \
-        sudo \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -85,8 +84,6 @@ RUN echo "${LANG} UTF-8" > /etc/locale.gen \
 
 RUN groupadd --gid 1000 ${USERNAME} \
     && useradd --uid 1000 --gid 1000 --shell ${USER_SHELL} --create-home ${USERNAME} \
-    && echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" > "/etc/sudoers.d/${USERNAME}" \
-    && chmod 0440 "/etc/sudoers.d/${USERNAME}" \
     && install -o ${USERNAME} -g ${USERNAME} -d /workspace
 
 COPY --from=neovim-builder /tmp/nvim /opt/nvim
@@ -97,7 +94,7 @@ COPY --chmod=755 scripts/lua-language-server /usr/local/bin/lua-language-server
 
 COPY --from=node-builder /usr/local/lib/node_modules /usr/local/lib/node_modules
 COPY --from=node-builder /usr/local/bin /usr/local/bin
-RUN rm -f /usr/local/bin/yarn \
+RUN rm /usr/local/bin/yarn \
     /usr/local/bin/yarnpkg \
     /usr/local/bin/docker-entrypoint.sh \
     /usr/local/bin/nodejs
