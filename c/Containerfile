@@ -8,21 +8,28 @@ USER root
 
 RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
-    && apt-get install -y --no-install-recommends rustup \
+    && apt-get install -y --no-install-recommends \
+        clang \
+        clang-format \
+        clang-tidy \
+        clangd \
+        cmake \
+        lld \
+        llvm \
+        ninja-build \
+        pkgconf \
+        valgrind \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 USER ${USERNAME}
 
-RUN rustup toolchain install stable \
-    && rustup component add rust-analyzer rust-src
-
 COPY --chmod=644 --chown=${USERNAME}:${USERNAME} configs/nvim.lua /home/${USERNAME}/.nvim.local
 
 LABEL org.opencontainers.image.source="https://github.com/christoffercarlsson/devcontainer" \
       org.opencontainers.image.authors="Christoffer Carlsson <cc@christoffercarlsson.com>" \
-      org.opencontainers.image.description="Rust devcontainer" \
+      org.opencontainers.image.description="C devcontainer" \
       org.opencontainers.image.licenses="Unlicense" \
-      org.opencontainers.image.title="rust"
+      org.opencontainers.image.title="c"
 
 CMD ["sleep", "infinity"]
