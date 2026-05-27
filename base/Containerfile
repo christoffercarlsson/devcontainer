@@ -109,6 +109,7 @@ RUN rm .bashrc
 RUN git clone https://github.com/christoffercarlsson/dotfiles .dotfiles \
     && cd .dotfiles \
     && stow bash \
+    && stow biome \
     && stow fish \
     && stow git \
     && stow neovim \
@@ -122,7 +123,7 @@ WORKDIR /workspace
 
 LABEL org.opencontainers.image.source="https://github.com/christoffercarlsson/devcontainers" \
       org.opencontainers.image.authors="Christoffer Carlsson <cc@christoffercarlsson.com>" \
-      org.opencontainers.image.description="Base devcontainer" \
+      org.opencontainers.image.description="Base development container" \
       org.opencontainers.image.licenses="Unlicense" \
       org.opencontainers.image.title="base"
 

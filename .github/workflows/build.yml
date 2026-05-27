@@ -1,13 +1,10 @@
-name: Build and publish devcontainer images to GitHub Container Registry
-
+name: Build and publish container images to GitHub Container Registry
 on:
   push:
     branches:
       - main
-
 permissions:
   contents: read
-
 jobs:
   build:
     permissions:
@@ -27,6 +24,9 @@ jobs:
             base: base
           - name: rust
             path: rust
+            base: base
+          - name: typescript
+            path: typescript
             base: base
     uses: docker/github-builder/.github/workflows/build.yml@073833262a23a17675c95c4541ab063b7646756b
     with:

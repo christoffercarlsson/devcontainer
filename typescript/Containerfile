@@ -4,25 +4,25 @@ FROM ghcr.io/christoffercarlsson/devcontainers/${BASE}:latest
 
 ARG USERNAME=dev
 
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+
 USER root
 
-RUN export DEBIAN_FRONTEND=noninteractive \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends rustup \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+RUN npm install -g \
+        typescript \
+        typescript-language-server \
+        @biomejs/biome \
+    && corepack enable pnpm \
+    && npm cache clean --force
 
 USER ${USERNAME}
-
-RUN rustup toolchain install stable \
-    && rustup component add rust-analyzer rust-src
 
 COPY --chmod=644 --chown=${USERNAME}:${USERNAME} configs/nvim.lua /home/${USERNAME}/.nvim.local
 
 LABEL org.opencontainers.image.source="https://github.com/christoffercarlsson/devcontainers" \
       org.opencontainers.image.authors="Christoffer Carlsson <cc@christoffercarlsson.com>" \
-      org.opencontainers.image.description="Rust development container" \
+      org.opencontainers.image.description="TypeScript, JavaScript, and Node.js development container" \
       org.opencontainers.image.licenses="Unlicense" \
-      org.opencontainers.image.title="rust"
+      org.opencontainers.image.title="typescript"
 
 CMD ["sleep", "infinity"]
