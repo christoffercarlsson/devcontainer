@@ -120,7 +120,7 @@ COPY --chmod=644 --chown=${USERNAME}:${USERNAME} configs/gitconfig .gitconfig.lo
 
 WORKDIR /workspace
 
-LABEL org.opencontainers.image.source="https://github.com/christoffercarlsson/devcontainer" \
+LABEL org.opencontainers.image.source="https://github.com/christoffercarlsson/devcontainers" \
       org.opencontainers.image.authors="Christoffer Carlsson <cc@christoffercarlsson.com>" \
       org.opencontainers.image.description="Base devcontainer" \
       org.opencontainers.image.licenses="Unlicense" \

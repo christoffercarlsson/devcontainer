@@ -1,6 +1,6 @@
 ARG BASE=base
 
-FROM ghcr.io/christoffercarlsson/devcontainer/${BASE}:main
+FROM ghcr.io/christoffercarlsson/devcontainers/${BASE}:main
 
 ARG USERNAME=dev
 
@@ -19,7 +19,7 @@ RUN rustup toolchain install stable \
 
 COPY --chmod=644 --chown=${USERNAME}:${USERNAME} configs/nvim.lua /home/${USERNAME}/.nvim.local
 
-LABEL org.opencontainers.image.source="https://github.com/christoffercarlsson/devcontainer" \
+LABEL org.opencontainers.image.source="https://github.com/christoffercarlsson/devcontainers" \
       org.opencontainers.image.authors="Christoffer Carlsson <cc@christoffercarlsson.com>" \
       org.opencontainers.image.description="Rust devcontainer" \
       org.opencontainers.image.licenses="Unlicense" \
