@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/lua-language-server"
+CACHE_DIR="/tmp/lua-language-server"
 
 mkdir -p "$CACHE_DIR/log" "$CACHE_DIR/meta"
 
