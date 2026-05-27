@@ -1,6 +1,6 @@
 ARG BASE=base
 
-FROM ghcr.io/christoffercarlsson/devcontainers/${BASE}:main
+FROM ghcr.io/christoffercarlsson/devcontainers/${BASE}:latest
 
 ARG USERNAME=dev
 
