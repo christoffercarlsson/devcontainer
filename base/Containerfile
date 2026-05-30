@@ -73,7 +73,6 @@ RUN export DEBIAN_FRONTEND=noninteractive \
         man-db \
         manpages \
         manpages-dev \
-        shellcheck \
         shfmt \
         stow \
         tmux \
