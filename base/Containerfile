@@ -109,16 +109,16 @@ RUN rm .bashrc
 RUN git clone https://github.com/christoffercarlsson/dotfiles .dotfiles \
     && cd .dotfiles \
     && stow bash \
-    && stow biome \
-    && stow claude \
-    && stow fish \
-    && stow git \
-    && stow neovim \
-    && stow opencode \
-    && stow rumdl \
-    && stow scripts \
-    && stow tmux \
-    && stow vim
+        biome \
+        claude \
+        fish \
+        git \
+        neovim \
+        opencode \
+        rumdl \
+        scripts \
+        tmux \
+        vim
 
 COPY --chmod=644 --chown=${USERNAME}:${USERNAME} configs/gitconfig .gitconfig.local
 
