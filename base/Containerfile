@@ -53,6 +53,7 @@ ARG TZ=Europe/Stockholm
 ARG USERNAME=dev
 ARG USER_SHELL=/bin/fish
 
+ENV BAT_THEME=base16
 ENV EDITOR=nvim
 ENV LANG=${LANG}
 ENV LC_ALL=${LANG}
