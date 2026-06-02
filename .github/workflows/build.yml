@@ -19,9 +19,6 @@ jobs:
           - name: base
             path: base
             base: debian:trixie-slim
-          - name: agentic
-            path: agentic
-            base: base
           - name: c
             path: c
             base: base
@@ -31,15 +28,6 @@ jobs:
           - name: typescript
             path: typescript
             base: base
-          - name: agentic-c
-            path: c
-            base: agentic
-          - name: agentic-rust
-            path: rust
-            base: agentic
-          - name: agentic-typescript
-            path: typescript
-            base: agentic
     uses: docker/github-builder/.github/workflows/build.yml@073833262a23a17675c95c4541ab063b7646756b
     with:
       output: image
