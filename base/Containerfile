@@ -27,10 +27,12 @@ RUN git clone --depth 1 --branch 3.18.2 \
 
 FROM node:24-slim AS node-builder
 
-RUN npm install -g \
-    @anthropic-ai/claude-code \
+RUN npm install -g --ignore-scripts \
     bash-language-server \
+    @earendil-works/pi-coding-agent \
     tombi
+
+RUN npm install -g @anthropic-ai/claude-code
 
 FROM rust:1-trixie AS rust-tools-builder
 
