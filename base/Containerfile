@@ -40,7 +40,6 @@ RUN cargo install --root /opt/rust-tools \
     bat \
     eza \
     fd-find \
-    git-delta \
     jaq \
     ripgrep \
     rumdl \
