@@ -11,8 +11,6 @@ RUN npm install -g --ignore-scripts \
     && corepack enable pnpm \
     && npm cache clean --force
 
-COPY --chmod=644 --chown=dev:dev configs/nvim.lua /home/dev/.nvim.local
-
 LABEL org.opencontainers.image.source="https://github.com/christoffercarlsson/devcontainers" \
       org.opencontainers.image.authors="Christoffer Carlsson <cc@christoffercarlsson.com>" \
       org.opencontainers.image.description="TypeScript, JavaScript, and Node.js development container" \
