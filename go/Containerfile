@@ -1,4 +1,4 @@
-ARG BASE=base
+ARG BASE=c
 
 FROM ghcr.io/christoffercarlsson/devcontainers/${BASE}:latest
 
