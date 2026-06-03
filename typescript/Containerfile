@@ -2,22 +2,16 @@ ARG BASE=base
 
 FROM ghcr.io/christoffercarlsson/devcontainers/${BASE}:latest
 
-ARG USERNAME=dev
-
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 
-USER root
-
-RUN npm install -g \
+RUN npm install -g --ignore-scripts \
         typescript \
         typescript-language-server \
         @biomejs/biome \
     && corepack enable pnpm \
     && npm cache clean --force
 
-USER ${USERNAME}
-
-COPY --chmod=644 --chown=${USERNAME}:${USERNAME} configs/nvim.lua /home/${USERNAME}/.nvim.local
+COPY --chmod=644 --chown=dev:dev configs/nvim.lua /home/dev/.nvim.local
 
 LABEL org.opencontainers.image.source="https://github.com/christoffercarlsson/devcontainers" \
       org.opencontainers.image.authors="Christoffer Carlsson <cc@christoffercarlsson.com>" \
@@ -25,4 +19,4 @@ LABEL org.opencontainers.image.source="https://github.com/christoffercarlsson/de
       org.opencontainers.image.licenses="Unlicense" \
       org.opencontainers.image.title="typescript"
 
-CMD ["sleep", "infinity"]
+ENTRYPOINT ["/usr/local/sbin/entrypoint"]

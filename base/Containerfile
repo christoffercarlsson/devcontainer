@@ -50,7 +50,6 @@ FROM ${BASE}
 
 ARG LANG=en_US.UTF-8
 ARG TZ=Europe/Stockholm
-ARG USERNAME=dev
 ARG USER_SHELL=/bin/fish
 
 ENV BAT_THEME=base16
@@ -77,6 +76,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
         man-db \
         manpages \
         manpages-dev \
+        openssh-server \
         shfmt \
         stow \
         tmux \
@@ -86,9 +86,9 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 RUN echo "${LANG} UTF-8" > /etc/locale.gen \
     && locale-gen
 
-RUN groupadd --gid 1000 ${USERNAME} \
-    && useradd --uid 1000 --gid 1000 --shell ${USER_SHELL} --create-home ${USERNAME} \
-    && install -o ${USERNAME} -g ${USERNAME} -d /workspace
+RUN groupadd --gid 1000 dev \
+    && useradd --uid 1000 --gid 1000 --shell ${USER_SHELL} --create-home dev \
+    && install -o dev -g dev -d /workspace
 
 COPY --from=neovim-builder /tmp/nvim /opt/nvim
 RUN ln -s /opt/nvim/bin/nvim /usr/local/bin/nvim
@@ -105,8 +105,21 @@ RUN rm /usr/local/bin/yarn \
 
 COPY --from=rust-tools-builder /opt/rust-tools/bin/ /usr/local/bin/
 
-USER ${USERNAME}
-WORKDIR /home/${USERNAME}
+COPY --chmod=644 configs/sshd.conf /etc/ssh/sshd_config.d/devcontainer.conf
+COPY --chmod=700 scripts/entrypoint /usr/local/sbin/entrypoint
+
+RUN printf "\nSetEnv BAT_THEME=%s EDITOR=%s LANG=%s LC_ALL=%s TERM=%s TZ=%s VISUAL=%s" \
+        "${BAT_THEME}" \
+        "${EDITOR}" \
+        "${LANG}" \
+        "${LC_ALL}" \
+        "${TERM}" \
+        "${TZ}" \
+        "${VISUAL}" \
+    >> /etc/ssh/sshd_config.d/devcontainer.conf
+
+USER dev
+WORKDIR /home/dev
 
 RUN rm .bashrc
 
@@ -124,8 +137,7 @@ RUN git clone https://github.com/christoffercarlsson/dotfiles .dotfiles \
         tmux \
         vim
 
-COPY --chmod=644 --chown=${USERNAME}:${USERNAME} configs/gitconfig .gitconfig.local
-
+USER root
 WORKDIR /workspace
 
 LABEL org.opencontainers.image.source="https://github.com/christoffercarlsson/devcontainers" \
@@ -134,4 +146,4 @@ LABEL org.opencontainers.image.source="https://github.com/christoffercarlsson/de
       org.opencontainers.image.licenses="Unlicense" \
       org.opencontainers.image.title="base"
 
-CMD ["sleep", "infinity"]
+ENTRYPOINT ["/usr/local/sbin/entrypoint"]
