@@ -107,8 +107,8 @@ COPY --from=rust-tools-builder /opt/rust-tools/bin/ /usr/local/bin/
 
 COPY --chmod=700 scripts/entrypoint.bash /usr/local/sbin/entrypoint
 COPY --chmod=644 configs/sshd.conf /etc/ssh/sshd_config.d/devcontainer.conf
-COPY --chmod=644 --chmod=dev:dev scripts/local.bash /home/dev/.bash.local
-COPY --chmod=644 --chmod=dev:dev scripts/local.fish /home/dev/.fish.local
+COPY --chmod=644 --chown=dev:dev scripts/local.bash /home/dev/.bash.local
+COPY --chmod=644 --chown=dev:dev scripts/local.fish /home/dev/.fish.local
 
 RUN printf "\nSetEnv BAT_THEME=%s EDITOR=%s LANG=%s LC_ALL=%s TERM=%s TZ=%s VISUAL=%s" \
         "${BAT_THEME}" \
