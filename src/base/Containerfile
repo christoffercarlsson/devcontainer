@@ -145,4 +145,6 @@ LABEL org.opencontainers.image.source="https://github.com/christoffercarlsson/de
       org.opencontainers.image.licenses="Unlicense" \
       org.opencontainers.image.title="base"
 
+EXPOSE 22
+
 ENTRYPOINT ["/usr/local/sbin/entrypoint"]
