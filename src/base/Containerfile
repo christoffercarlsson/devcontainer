@@ -25,7 +25,7 @@ RUN git clone --depth 1 --branch 3.18.2 \
     && chmod +x ./make.sh \
     && ./make.sh > /dev/null
 
-FROM node:24-slim AS node-builder
+FROM node:24-slim AS node-tools-builder
 
 RUN npm install -g --ignore-scripts \
     bash-language-server \
@@ -93,10 +93,10 @@ COPY --from=neovim-builder /tmp/nvim /opt/nvim
 RUN ln -s /opt/nvim/bin/nvim /usr/local/bin/nvim
 
 COPY --from=neovim-builder /tmp/lua-language-server /opt/lua-language-server
-COPY --chmod=755 scripts/lua-language-server /usr/local/bin/lua-language-server
+COPY --chmod=755 scripts/lua-language-server.bash /usr/local/bin/lua-language-server
 
-COPY --from=node-builder /usr/local/lib/node_modules /usr/local/lib/node_modules
-COPY --from=node-builder /usr/local/bin /usr/local/bin
+COPY --from=node-tools-builder /usr/local/lib/node_modules /usr/local/lib/node_modules
+COPY --from=node-tools-builder /usr/local/bin /usr/local/bin
 RUN rm /usr/local/bin/yarn \
     /usr/local/bin/yarnpkg \
     /usr/local/bin/docker-entrypoint.sh \
@@ -104,8 +104,10 @@ RUN rm /usr/local/bin/yarn \
 
 COPY --from=rust-tools-builder /opt/rust-tools/bin/ /usr/local/bin/
 
+COPY --chmod=700 scripts/entrypoint.bash /usr/local/sbin/entrypoint
 COPY --chmod=644 configs/sshd.conf /etc/ssh/sshd_config.d/devcontainer.conf
-COPY --chmod=700 scripts/entrypoint /usr/local/sbin/entrypoint
+COPY --chmod=644 --chmod=dev:dev scripts/local.bash /home/dev/.bash.local
+COPY --chmod=644 --chmod=dev:dev scripts/local.fish /home/dev/.fish.local
 
 RUN printf "\nSetEnv BAT_THEME=%s EDITOR=%s LANG=%s LC_ALL=%s TERM=%s TZ=%s VISUAL=%s" \
         "${BAT_THEME}" \

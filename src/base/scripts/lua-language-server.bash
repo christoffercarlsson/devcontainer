@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 CACHE_DIR="/tmp/lua-language-server"
 
