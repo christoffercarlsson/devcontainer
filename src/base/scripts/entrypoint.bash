@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -eo pipefail
 
 ssh-keygen -A
+
+if [ ! -f /authorized_keys ] && [ -n "$DEVCONTAINER_AUTHORIZED_KEYS" ]; then
+    printf '%s\n' "$DEVCONTAINER_AUTHORIZED_KEYS" > /authorized_keys
+fi
 
 if [ -f /authorized_keys ]; then
     install -o dev -g dev -m 700 -d /home/dev/.ssh
