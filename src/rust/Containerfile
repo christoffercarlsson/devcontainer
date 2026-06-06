@@ -8,8 +8,12 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+USER dev
+
 RUN rustup toolchain install stable \
     && rustup component add rust-analyzer rust-src
+
+USER root
 
 LABEL org.opencontainers.image.source="https://github.com/christoffercarlsson/devcontainers" \
       org.opencontainers.image.authors="Christoffer Carlsson <cc@christoffercarlsson.com>" \
