@@ -1,0 +1,150 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+usage() {
+    cat <<EOF
+Usage: $0 [options] <workspace>
+
+Options:
+  --name NAME       Container name (defaults to basename of workspace directory)
+  --image IMAGE     Image to use (defaults to ghcr.io/christoffercarlsson/devcontainers/base)
+  --cpus N          Maximum number of CPUs the container may use (defaults to 4)
+  --memory SIZE     Memory limit for the container (defaults to 2G)
+
+Arguments:
+  workspace         Path to workspace directory
+EOF
+}
+
+error() {
+    echo "Error: $*" >&2
+    exit 1
+}
+
+start() {
+    local args=()
+    local cpus="4"
+    local image="base"
+    local memory="2G"
+    local name=""
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+        -h | --help)
+            usage
+            exit 0
+            ;;
+        -c | --cpus)
+            cpus="$2"
+            shift 2
+            ;;
+        -i | --image)
+            image="$2"
+            shift 2
+            ;;
+        -m | --memory)
+            memory="$2"
+            shift 2
+            ;;
+        -n | --name)
+            name="$2"
+            shift 2
+            ;;
+        --)
+            shift
+            args+=("$@")
+            break
+            ;;
+        -*) error "unknown option: $1" ;;
+        *)
+            args+=("$1")
+            shift
+            ;;
+        esac
+    done
+
+    set -- "${args[@]}"
+    local workspace="$1"
+
+    [[ -z "$image" ]] && error "missing option: image"
+    [[ -z "$workspace" ]] && error "missing argument: workspace"
+    [[ -d "$workspace" ]] || error "$workspace is not a directory"
+
+    workspace="$(cd "$workspace" && pwd)"
+
+    [[ -z "$name" ]] && name="$(basename "$workspace")"
+
+    case "$image" in
+    base | go | rust | c | typescript)
+        image="ghcr.io/christoffercarlsson/devcontainers/$image"
+        ;;
+    esac
+
+    local authorized_keys
+    authorized_keys="$(ssh-add -L)" || error "failed to get identities from SSH agent"
+
+    start_container \
+        "$name" \
+        "$image" \
+        "$cpus" \
+        "$memory" \
+        "$workspace" \
+        "$authorized_keys"
+
+    write_ssh_config "$name"
+}
+
+write_ssh_config() {
+    local name="$1"
+    local file="$HOME/.ssh/devcontainers/$name.conf"
+    local directory="$(dirname "$file")"
+    local include_line="Include $directory/*.conf"
+    local ip=""
+    local ssh_config="$HOME/.ssh/config"
+
+    ip="$(get_container_ip "$name")" || error "failed to get IP address for container: $name"
+
+    install -d -m 700 "$directory"
+
+    cat >"$file" <<EOF
+Host $name
+    HostName $ip
+    User dev
+    StrictHostKeyChecking no
+    UserKnownHostsFile /dev/null
+    LogLevel ERROR
+EOF
+
+    chmod 600 "$file"
+    touch "$ssh_config"
+    chmod 600 "$ssh_config"
+
+    if ! grep -qxF "$include_line" "$ssh_config"; then
+        printf '%s\n' "$include_line" | cat - "$ssh_config" >"$ssh_config.tmp" &&
+            mv "$ssh_config.tmp" "$ssh_config"
+    fi
+}
+
+start_container() {
+    local name="$1"
+    local image="$2"
+    local cpus="$3"
+    local memory="$4"
+    local workspace="$5"
+    local authorized_keys="$6"
+
+    container run -d --rm \
+        --name "$name" \
+        --cpus "$cpus" \
+        --memory "$memory" \
+        --volume "$workspace:/workspace" \
+        --env "DEVCONTAINER_AUTHORIZED_KEYS=$authorized_keys" \
+        "$image"
+}
+
+get_container_ip() {
+    container inspect "$1" | jq -r '.[0].networks[0].ipv4Address | split("/")[0]'
+}
+
+start "$@"
