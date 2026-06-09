@@ -47,19 +47,6 @@ RUN cargo install --root /opt/rust-tools \
 
 FROM ${BASE}
 
-ARG LANG=en_US.UTF-8
-ARG TZ=Europe/Stockholm
-ARG USER_SHELL=/bin/fish
-
-ENV BAT_THEME=base16
-ENV DEVCONTAINER_AUTHORIZED_KEYS=""
-ENV EDITOR=nvim
-ENV LANG=${LANG}
-ENV LC_ALL=${LANG}
-ENV TERM=xterm-256color
-ENV TZ=${TZ}
-ENV VISUAL=nvim
-
 RUN export DEBIAN_FRONTEND=noninteractive \
     && rm -f /etc/dpkg/dpkg.cfg.d/docker \
     && apt-get update \
@@ -87,7 +74,7 @@ RUN echo "${LANG} UTF-8" > /etc/locale.gen \
     && locale-gen
 
 RUN groupadd --gid 1000 dev \
-    && useradd --uid 1000 --gid 1000 --shell ${USER_SHELL} --create-home dev \
+    && useradd --uid 1000 --gid 1000 --shell /bin/fish --create-home dev \
     && install -o dev -g dev -d /workspace
 
 COPY --from=neovim-builder /tmp/nvim /opt/nvim
@@ -109,16 +96,6 @@ COPY --chmod=700 scripts/entrypoint.bash /usr/local/sbin/entrypoint
 COPY --chmod=644 configs/sshd.conf /etc/ssh/sshd_config.d/devcontainer.conf
 COPY --chmod=644 --chown=dev:dev scripts/local.bash /home/dev/.bash.local
 COPY --chmod=644 --chown=dev:dev scripts/local.fish /home/dev/.fish.local
-
-RUN printf "\nSetEnv BAT_THEME=%s EDITOR=%s LANG=%s LC_ALL=%s TERM=%s TZ=%s VISUAL=%s" \
-        "${BAT_THEME}" \
-        "${EDITOR}" \
-        "${LANG}" \
-        "${LC_ALL}" \
-        "${TERM}" \
-        "${TZ}" \
-        "${VISUAL}" \
-    >> /etc/ssh/sshd_config.d/devcontainer.conf
 
 USER dev
 WORKDIR /home/dev
