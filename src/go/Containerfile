@@ -11,10 +11,6 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-LABEL org.opencontainers.image.source="https://github.com/christoffercarlsson/devcontainers" \
-      org.opencontainers.image.authors="Christoffer Carlsson <cc@christoffercarlsson.com>" \
-      org.opencontainers.image.description="Go development container" \
-      org.opencontainers.image.licenses="Unlicense" \
-      org.opencontainers.image.title="go"
-
 ENTRYPOINT ["/usr/local/sbin/entrypoint"]
+
+LABEL org.opencontainers.image.source=https://github.com/christoffercarlsson/containers

@@ -15,10 +15,6 @@ RUN rustup toolchain install stable \
 
 USER root
 
-LABEL org.opencontainers.image.source="https://github.com/christoffercarlsson/devcontainers" \
-      org.opencontainers.image.authors="Christoffer Carlsson <cc@christoffercarlsson.com>" \
-      org.opencontainers.image.description="Rust development container" \
-      org.opencontainers.image.licenses="Unlicense" \
-      org.opencontainers.image.title="rust"
-
 ENTRYPOINT ["/usr/local/sbin/entrypoint"]
+
+LABEL org.opencontainers.image.source=https://github.com/christoffercarlsson/containers

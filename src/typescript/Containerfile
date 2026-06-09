@@ -11,10 +11,6 @@ RUN npm install -g --ignore-scripts \
     && corepack enable pnpm \
     && npm cache clean --force
 
-LABEL org.opencontainers.image.source="https://github.com/christoffercarlsson/devcontainers" \
-      org.opencontainers.image.authors="Christoffer Carlsson <cc@christoffercarlsson.com>" \
-      org.opencontainers.image.description="TypeScript, JavaScript, and Node.js development container" \
-      org.opencontainers.image.licenses="Unlicense" \
-      org.opencontainers.image.title="typescript"
-
 ENTRYPOINT ["/usr/local/sbin/entrypoint"]
+
+LABEL org.opencontainers.image.source=https://github.com/christoffercarlsson/containers
