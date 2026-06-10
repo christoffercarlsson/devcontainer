@@ -1,14 +1,8 @@
-ARG BASE=base
-
-FROM ghcr.io/christoffercarlsson/devcontainers/${BASE}:latest
-
-ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+FROM ghcr.io/christoffercarlsson/devcontainers/base:latest
 
 RUN npm install -g --ignore-scripts \
-        typescript \
         typescript-language-server \
         @biomejs/biome \
-    && corepack enable pnpm \
     && npm cache clean --force
 
 ENTRYPOINT ["/usr/local/sbin/entrypoint"]

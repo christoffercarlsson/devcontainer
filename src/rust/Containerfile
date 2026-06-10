@@ -1,6 +1,4 @@
-ARG BASE=base
-
-FROM ghcr.io/christoffercarlsson/devcontainers/${BASE}:latest
+FROM ghcr.io/christoffercarlsson/devcontainers/base:latest
 
 RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
@@ -10,7 +8,9 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 
 USER dev
 
-RUN rustup toolchain install stable \
+RUN rustup set profile minimal \
+    && rustup toolchain install stable \
+    && rustup default stable \
     && rustup component add rust-analyzer rust-src
 
 USER root

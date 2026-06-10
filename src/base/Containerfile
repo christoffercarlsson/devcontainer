@@ -1,31 +1,4 @@
-ARG BASE=debian:trixie-slim
-
-FROM debian:trixie-slim AS neovim-builder
-
-RUN export DEBIAN_FRONTEND=noninteractive \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends \
-        build-essential \
-        ca-certificates \
-        cmake \
-        curl \
-        gettext \
-        git \
-        ninja-build
-
-RUN git clone --depth 1 --branch stable \
-        https://github.com/neovim/neovim /tmp/neovim \
-    && cd /tmp/neovim \
-    && make CMAKE_BUILD_TYPE=Release \
-    && make CMAKE_INSTALL_PREFIX=/tmp/nvim install
-
-RUN git clone --depth 1 --branch 3.18.2 \
-        https://github.com/LuaLS/lua-language-server /tmp/lua-language-server \
-    && cd /tmp/lua-language-server \
-    && chmod +x ./make.sh \
-    && ./make.sh > /dev/null
-
-FROM node:24-slim AS node-tools-builder
+FROM ghcr.io/christoffercarlsson/node:latest AS node-tools-builder
 
 RUN npm install -g --ignore-scripts \
     bash-language-server \
@@ -34,9 +7,9 @@ RUN npm install -g --ignore-scripts \
 
 RUN npm install -g @anthropic-ai/claude-code
 
-FROM rust:1-trixie AS rust-tools-builder
+FROM ghcr.io/christoffercarlsson/rust:latest AS rust-tools-builder
 
-RUN cargo install --root /opt/rust-tools \
+RUN cargo install --root /usr/local \
     bat \
     eza \
     fd-find \
@@ -45,21 +18,19 @@ RUN cargo install --root /opt/rust-tools \
     rumdl \
     tokei
 
-FROM ${BASE}
+FROM ghcr.io/christoffercarlsson/debian-neovim:latest
 
 RUN export DEBIAN_FRONTEND=noninteractive \
     && rm -f /etc/dpkg/dpkg.cfg.d/docker \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
         build-essential \
-        ca-certificates \
         curl \
         fish \
         fzf \
         git \
         gnupg \
         less \
-        locales \
         man-db \
         manpages \
         manpages-dev \
@@ -70,35 +41,28 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN echo "${LANG} UTF-8" > /etc/locale.gen \
-    && locale-gen
+COPY scripts/entrypoint /usr/local/sbin/entrypoint
+COPY configs/sshd.conf /etc/ssh/sshd_config.d/devcontainer.conf
 
-RUN groupadd --gid 1000 dev \
-    && useradd --uid 1000 --gid 1000 --shell /bin/fish --create-home dev \
-    && install -o dev -g dev -d /workspace
-
-COPY --from=neovim-builder /tmp/nvim /opt/nvim
-RUN ln -s /opt/nvim/bin/nvim /usr/local/bin/nvim
-
-COPY --from=neovim-builder /tmp/lua-language-server /opt/lua-language-server
-COPY --chmod=755 scripts/lua-language-server.bash /usr/local/bin/lua-language-server
+COPY --from=ghcr.io/christoffercarlsson/lua-language-server:latest \
+    /opt/lua-language-server /opt/lua-language-server
+COPY --from=ghcr.io/christoffercarlsson/lua-language-server:latest \
+    /usr/local/bin/lua-language-server /usr/local/bin/lua-language-server
 
 COPY --from=node-tools-builder /usr/local/lib/node_modules /usr/local/lib/node_modules
 COPY --from=node-tools-builder /usr/local/bin /usr/local/bin
-RUN rm /usr/local/bin/yarn \
-    /usr/local/bin/yarnpkg \
-    /usr/local/bin/docker-entrypoint.sh \
-    /usr/local/bin/nodejs
 
-COPY --from=rust-tools-builder /opt/rust-tools/bin/ /usr/local/bin/
+COPY --from=rust-tools-builder /usr/local/bin/ /usr/local/bin/
 
-COPY --chmod=700 scripts/entrypoint.bash /usr/local/sbin/entrypoint
-COPY --chmod=644 configs/sshd.conf /etc/ssh/sshd_config.d/devcontainer.conf
-COPY --chmod=644 --chown=dev:dev scripts/local.bash /home/dev/.bash.local
-COPY --chmod=644 --chown=dev:dev scripts/local.fish /home/dev/.fish.local
+RUN groupadd --gid 1000 dev \
+    && useradd --uid 1000 --gid dev --shell /bin/fish --create-home dev \
+    && install -o dev -g dev -d /workspace
 
 USER dev
 WORKDIR /home/dev
+
+COPY --chown=dev:dev scripts/bash /home/dev/.bash.local
+COPY --chown=dev:dev scripts/fish /home/dev/.fish.local
 
 RUN rm .bashrc
 

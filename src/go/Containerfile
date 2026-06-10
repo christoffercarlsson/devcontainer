@@ -1,6 +1,4 @@
-ARG BASE=c
-
-FROM ghcr.io/christoffercarlsson/devcontainers/${BASE}:latest
+FROM ghcr.io/christoffercarlsson/devcontainers/c:latest
 
 RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get update \

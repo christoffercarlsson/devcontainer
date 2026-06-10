@@ -1,8 +1,6 @@
-name: Build and publish images to GitHub Container Registry
+name: ci
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:
@@ -18,19 +16,14 @@ jobs:
         include:
           - name: base
             path: src/base
-            base: debian:trixie-slim
           - name: c
             path: src/c
-            base: base
           - name: go
             path: src/go
-            base: c
           - name: rust
             path: src/rust
-            base: base
           - name: typescript
             path: src/typescript
-            base: base
     uses: docker/github-builder/.github/workflows/build.yml@073833262a23a17675c95c4541ab063b7646756b
     with:
       output: image
@@ -38,7 +31,6 @@ jobs:
       platforms: linux/amd64,linux/arm64
       context: ./${{ matrix.path }}
       file: Containerfile
-      build-args: BASE=${{ matrix.base }}
       meta-images: ghcr.io/${{ github.repository }}/${{ matrix.name }}
       meta-tags: |
         type=raw,value=latest,enable={{is_default_branch}}
