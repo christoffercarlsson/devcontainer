@@ -1,4 +1,4 @@
-FROM ghcr.io/christoffercarlsson/devcontainers/c:latest
+FROM ghcr.io/christoffercarlsson/devcontainers/c:latest AS runtime
 
 RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get update \

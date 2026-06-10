@@ -1,4 +1,4 @@
-FROM ghcr.io/christoffercarlsson/devcontainers/base:latest
+FROM ghcr.io/christoffercarlsson/devcontainers/base:latest AS runtime
 
 RUN npm install -g --ignore-scripts \
         typescript-language-server \

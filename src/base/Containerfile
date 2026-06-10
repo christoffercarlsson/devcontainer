@@ -18,7 +18,7 @@ RUN cargo install --root /usr/local \
     rumdl \
     tokei
 
-FROM ghcr.io/christoffercarlsson/debian-neovim:latest
+FROM ghcr.io/christoffercarlsson/debian-neovim:latest AS runtime
 
 RUN export DEBIAN_FRONTEND=noninteractive \
     && rm -f /etc/dpkg/dpkg.cfg.d/docker \
