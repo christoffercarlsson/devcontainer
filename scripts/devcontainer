@@ -221,18 +221,18 @@ start_container() {
     local workspace="$6"
     local authorized_keys="$7"
     local shell="$8"
-    local publish=()
+    local runtime_flags=()
 
     case "$runtime" in
     container) ;;
-    *) publish=(--publish 127.0.0.1:0:22) ;;
+    *) runtime_flags=(--publish 127.0.0.1::22 --hostname "$name") ;;
     esac
 
     "$runtime" run -d --rm \
         --name "$name" \
         --cpus "$cpus" \
         --memory "$memory" \
-        "${publish[@]}" \
+        "${runtime_flags[@]}" \
         --volume "$workspace:/workspace" \
         --env "DEVCONTAINER_AUTHORIZED_KEYS=$authorized_keys" \
         --env "DEVCONTAINER_SHELL=$shell" \
