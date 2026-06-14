@@ -1,4 +1,4 @@
-FROM ghcr.io/christoffercarlsson/node:latest AS node-tools-builder
+FROM ghcr.io/christoffercarlsson/node@sha256:cc3aa950ae6c9b943b20de47d304524dd4ae706065b73db902281586ad5d2634 AS node-tools-builder
 
 RUN npm install -g --ignore-scripts \
     bash-language-server \
@@ -7,7 +7,7 @@ RUN npm install -g --ignore-scripts \
 
 RUN npm install -g @anthropic-ai/claude-code
 
-FROM ghcr.io/christoffercarlsson/rust:latest AS rust-tools-builder
+FROM ghcr.io/christoffercarlsson/rust@sha256:2a123a30aaf437a9b8d67695b24e79cddceea5ec3e8adf632df6a7a8f60fb949 AS rust-tools-builder
 
 RUN cargo install --root /usr/local \
     bat \
@@ -18,7 +18,9 @@ RUN cargo install --root /usr/local \
     rumdl \
     tokei
 
-FROM ghcr.io/christoffercarlsson/debian-neovim:latest AS runtime
+FROM ghcr.io/christoffercarlsson/lua-language-server@sha256:7640dfa12f4749a44dc71808b2db046e15d6f82a90116e37c100f1a790551204 AS luals-builder
+
+FROM ghcr.io/christoffercarlsson/debian-neovim@sha256:b04ff03acff3d79d1f7b643f287dab170e441b13230150f595381092cc63cfb4 AS runtime
 
 RUN export DEBIAN_FRONTEND=noninteractive \
     && rm -f /etc/dpkg/dpkg.cfg.d/docker \
@@ -38,24 +40,23 @@ RUN export DEBIAN_FRONTEND=noninteractive \
         shfmt \
         stow \
         tmux \
+        zsh \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 COPY scripts/entrypoint /usr/local/sbin/entrypoint
 COPY configs/sshd.conf /etc/ssh/sshd_config.d/devcontainer.conf
 
-COPY --from=ghcr.io/christoffercarlsson/lua-language-server:latest \
-    /opt/lua-language-server /opt/lua-language-server
-COPY --from=ghcr.io/christoffercarlsson/lua-language-server:latest \
-    /usr/local/bin/lua-language-server /usr/local/bin/lua-language-server
-
 COPY --from=node-tools-builder /usr/local/lib/node_modules /usr/local/lib/node_modules
 COPY --from=node-tools-builder /usr/local/bin /usr/local/bin
 
 COPY --from=rust-tools-builder /usr/local/bin/ /usr/local/bin/
 
+COPY --from=luals-builder /opt/lua-language-server /opt/lua-language-server
+COPY --from=luals-builder /usr/local/bin/lua-language-server /usr/local/bin/lua-language-server
+
 RUN groupadd --gid 1000 dev \
-    && useradd --uid 1000 --gid dev --shell /bin/fish --create-home dev \
+    && useradd --uid 1000 --gid dev --shell /bin/bash --create-home dev \
     && install -o dev -g dev -d /workspace
 
 USER dev
