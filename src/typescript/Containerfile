@@ -1,4 +1,4 @@
-FROM ghcr.io/christoffercarlsson/devcontainers/base@sha256:f5219ce03b74e2a52442a86f651ad7afe183d0f0b1fd9761f81c9da730ebacd8 AS runtime
+FROM ghcr.io/christoffercarlsson/devcontainers/base@sha256:5cf012886f38e20a9115fadcd0bc0c50abfeffc4701a175b660c70e7cbd22509 AS runtime
 
 RUN npm install -g \
         @biomejs/biome \
