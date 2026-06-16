@@ -15,7 +15,7 @@ Options:
   --forward-agent   Forward the SSH agent into the container (disabled by default)
 
 Arguments:
-  workspace         Path to workspace directory
+  workspace         Path to workspace directory (defaults to current working directory)
 EOF
 }
 
@@ -77,7 +77,7 @@ start() {
     done
 
     set -- "${args[@]}"
-    local workspace="$1"
+    local workspace="${1:-.}"
 
     [[ -z "$workspace" ]] && error "missing argument: workspace"
     [[ -d "$workspace" ]] || error "$workspace is not a directory"
