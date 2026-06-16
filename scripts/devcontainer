@@ -233,7 +233,7 @@ start_container() {
         --cpus "$cpus" \
         --memory "$memory" \
         "${runtime_flags[@]}" \
-        --volume "$workspace:/workspace" \
+        --volume "$workspace:/home/dev/workspace" \
         --env "DEVCONTAINER_AUTHORIZED_KEYS=$authorized_keys" \
         --env "DEVCONTAINER_SHELL=$shell" \
         "$image"
