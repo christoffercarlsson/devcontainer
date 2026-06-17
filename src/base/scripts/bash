@@ -8,5 +8,5 @@ export LANG="en_US.UTF-8"
 export LC_ALL="$LANG"
 
 if [ -n "$SSH_TTY" ] && [ "$SHLVL" -eq 1 ]; then
-    cd /home/dev/workspace && t
+    cd /workspace && t
 fi

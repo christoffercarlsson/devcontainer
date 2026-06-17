@@ -11,7 +11,7 @@ Options:
   --image IMAGE     Image to use (defaults to ghcr.io/christoffercarlsson/devcontainers/base)
   --cpus N          Maximum number of CPUs the container may use (defaults to 2)
   --memory SIZE     Memory limit for the container (defaults to 4G)
-  --shell SHELL     Login shell to use; bash, fish or zsh (defaults to bash)
+  --shell SHELL     Login shell to use; bash, fish or zsh (defaults to zsh)
   --forward-agent   Forward the SSH agent into the container (disabled by default)
 
 Arguments:
@@ -233,7 +233,7 @@ start_container() {
         --cpus "$cpus" \
         --memory "$memory" \
         "${runtime_flags[@]}" \
-        --volume "$workspace:/home/dev/workspace" \
+        --volume "$workspace:/workspace" \
         --env "DEVCONTAINER_AUTHORIZED_KEYS=$authorized_keys" \
         --env "DEVCONTAINER_SHELL=$shell" \
         "$image"

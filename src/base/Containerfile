@@ -58,7 +58,7 @@ COPY --from=luals-builder /usr/local/bin/lua-language-server /usr/local/bin/lua-
 
 RUN groupadd --gid 1000 dev \
     && useradd --uid 1000 --gid dev --shell /bin/zsh --create-home dev \
-    && install -o dev -g dev -d /home/dev/workspace
+    && install -o dev -g dev -d /workspace
 
 USER dev
 WORKDIR /home/dev
@@ -74,7 +74,6 @@ RUN git clone https://github.com/christoffercarlsson/dotfiles .dotfiles \
     && stow bash \
         biome \
         claude \
-        deno \
         fish \
         git \
         neovim \
@@ -86,7 +85,7 @@ RUN git clone https://github.com/christoffercarlsson/dotfiles .dotfiles \
         zsh
 
 USER root
-WORKDIR /home/dev/workspace
+WORKDIR /workspace
 
 EXPOSE 22
 

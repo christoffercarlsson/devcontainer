@@ -8,5 +8,5 @@ set -gx LANG en_US.UTF-8
 set -gx LC_ALL $LANG
 
 if set -q SSH_TTY; and test "$SHLVL" -eq 1
-    cd /home/dev/workspace; and t
+    cd /workspace; and t
 end
