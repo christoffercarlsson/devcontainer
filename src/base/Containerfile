@@ -1,4 +1,4 @@
-FROM ghcr.io/christoffercarlsson/node@sha256:cc3aa950ae6c9b943b20de47d304524dd4ae706065b73db902281586ad5d2634 AS node-tools-builder
+FROM ghcr.io/christoffercarlsson/node@sha256:21429f5e718622987c721184831e4887672b40d0a7fb1cea79ac5b9b133c712a AS node-tools-builder
 
 RUN npm install -g --ignore-scripts \
     bash-language-server \
@@ -7,7 +7,7 @@ RUN npm install -g --ignore-scripts \
 
 RUN npm install -g @anthropic-ai/claude-code
 
-FROM ghcr.io/christoffercarlsson/rust@sha256:2a123a30aaf437a9b8d67695b24e79cddceea5ec3e8adf632df6a7a8f60fb949 AS rust-tools-builder
+FROM ghcr.io/christoffercarlsson/rust@sha256:1e72e85d9f58cdced1d96db92640d35a7c795374f91609baa27afd3cdc73b80a AS rust-tools-builder
 
 RUN cargo install --root /usr/local \
     bat \
@@ -19,9 +19,9 @@ RUN cargo install --root /usr/local \
     rumdl \
     tokei
 
-FROM ghcr.io/christoffercarlsson/lua-language-server@sha256:7640dfa12f4749a44dc71808b2db046e15d6f82a90116e37c100f1a790551204 AS luals-builder
+FROM ghcr.io/christoffercarlsson/lua-language-server@sha256:6ef86823e6413531996ca59afab60c50bb4042b3dbf9680c0aac399cad7c1f5f AS luals-builder
 
-FROM ghcr.io/christoffercarlsson/debian-neovim@sha256:b04ff03acff3d79d1f7b643f287dab170e441b13230150f595381092cc63cfb4 AS runtime
+FROM ghcr.io/christoffercarlsson/debian-neovim@sha256:3371e13da6d8079c96ea308604dd407c14053c11d0b0b7ba85f7947f62b0cb58 AS runtime
 
 RUN export DEBIAN_FRONTEND=noninteractive \
     && rm -f /etc/dpkg/dpkg.cfg.d/docker \
