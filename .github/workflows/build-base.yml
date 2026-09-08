@@ -1,4 +1,4 @@
-name: ci
+name: ci-base
 on:
   workflow_dispatch:
 permissions:
@@ -9,26 +9,14 @@ jobs:
       contents: read
       id-token: write
       packages: write
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - name: c
-            path: src/c
-          - name: go
-            path: src/go
-          - name: rust
-            path: src/rust
-          - name: typescript
-            path: src/typescript
     uses: docker/github-builder/.github/workflows/build.yml@073833262a23a17675c95c4541ab063b7646756b
     with:
       output: image
       push: true
       platforms: linux/amd64,linux/arm64
-      context: ./${{ matrix.path }}
+      context: ./src/base
       file: Containerfile
-      meta-images: ghcr.io/${{ github.repository }}/${{ matrix.name }}
+      meta-images: ghcr.io/${{ github.repository }}/base
       meta-tags: |
         type=raw,value=latest,enable={{is_default_branch}}
         type=ref,event=branch
